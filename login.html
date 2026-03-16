@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DursGo Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            950: '#000000',
+                            900: '#020617',
+                            800: '#0f172a',
+                            700: '#1e293b',
+                            600: '#334155',
+                            500: '#475569'
+                        },
+                        brand: {
+                            primary: '#0ea5e9',
+                            secondary: '#06b6d4',
+                            accent: '#14b8a6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 text-slate-300 min-h-screen flex items-center justify-center font-sans">
+
+    <div
+        class="max-w-md w-full bg-dark-800/80 backdrop-blur-xl border border-brand-primary/20 rounded-2xl p-8 shadow-2xl">
+        <div class="flex items-center justify-center gap-3 mb-8">
+            <div class="relative">
+                <div class="absolute inset-0 bg-orange-500/20 blur-xl rounded-full"></div>
+                <div class="relative text-orange-500">
+                    <!-- Vulnerability Scanner Icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" fill="currentColor" opacity="0.15"/>
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                        <circle cx="12" cy="11" r="3"/>
+                        <path d="M12 8V6M12 14v2M9 11H7M15 11h2"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="font-bold text-2xl text-white tracking-wide">DursGo</h1>
+        </div>
+        <h2 class="text-xl font-medium text-slate-400 text-center mb-6">Login</h2>
+        <form id="login-form">
+            <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-slate-400 mb-2">Username</label>
+                <input type="text" id="username" name="username"
+                    class="w-full bg-dark-900 border border-dark-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    required>
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-slate-400 mb-2">Password</label>
+                <input type="password" id="password" name="password"
+                    class="w-full bg-dark-900 border border-dark-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    required>
+            </div>
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity">Login</button>
+        </form>
+        <p class="text-center text-sm text-slate-400 mt-4">
+            Don't have an account? <a href="register.html"
+                class="font-medium text-brand-primary hover:underline">Register here</a>
+        </p>
+        <div id="error-message"
+            class="hidden mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = e.target.username.value;
+            const password = e.target.password.value;
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    window.location.href = 'index.html';
+                } else {
+                    errorMessage.textContent = data.message;
+                    errorMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
