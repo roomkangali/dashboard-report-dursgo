@@ -13,13 +13,13 @@ const JWT_SECRET = 'your_jwt_secret'; // Ganti dengan secret yang lebih aman
 passport.use(new LocalStrategy((username, password, done) => {
     db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
         if (err) { return done(err); }
-        if (!user) { return done(null, false, { message: 'Username tidak ditemukan.' }); }
+        if (!user) { return done(null, false, { message: 'Username not found.' }); }
         
         bcrypt.compare(password, user.password, (err, res) => {
             if (res) {
                 return done(null, user);
             } else {
-                return done(null, false, { message: 'Password salah.' });
+                return done(null, false, { message: 'Wrong password.' });
             }
         });
     });
@@ -45,19 +45,19 @@ const registerUser = (req, res) => {
     const { username, password } = req.body;
     
     if (!username || !password) {
-        return res.status(400).json({ message: 'Username dan password diperlukan.' });
+        return res.status(400).json({ message: 'Username and password are required.' });
     }
     
     bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
-            return res.status(500).json({ message: 'Error saat hashing password.' });
+            return res.status(500).json({ message: 'Error while hashing password.' });
         }
         
         db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hash], function(err) {
             if (err) {
-                return res.status(400).json({ message: 'Username sudah digunakan.' });
+                return res.status(400).json({ message: 'Username is already taken.' });
             }
-            res.status(201).json({ message: `User ${username} berhasil dibuat.` });
+            res.status(201).json({ message: `User ${username} was created successfully.` });
         });
     });
 };
@@ -67,7 +67,7 @@ const loginUser = (req, res) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: info ? info.message : 'Login gagal.',
+                message: info ? info.message : 'Login failed.',
                 user: user
             });
         }
